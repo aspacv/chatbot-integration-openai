@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Chatbot</title>
+    <style>
+        body { font-family: Arial; background: #0f172a; color: white; padding: 2rem; }
+        .chat-box { background: #1e293b; padding: 1.5rem; border-radius: 12px; max-width: 600px; margin: auto; }
+        .message { background: #2d3748; padding: 0.8rem; border-radius: 8px; margin: 0.5rem 0; }
+        .user { background: #2563eb; color: white; align-self: flex-end; }
+        .bot { background: #1e293b; }
+        input { width: 80%; padding: 0.8rem; border-radius: 8px; border: none; }
+        button { padding: 0.8rem 1.5rem; background: #64ffda; color: black; border: none; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="chat-box">
+        <h2>AI Customer Support Chatbot</h2>
+        <div id="messages"></div>
+        <input type="text" id="userInput" placeholder="Ask me anything..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const messages = document.getElementById('messages');
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user';
+            userDiv.textContent = 'You: ' + msg;
+            messages.appendChild(userDiv);
+
+            input.value = '';
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await response.json();
+
+            const botDiv = document.createElement('div');
+            botDiv.className = 'message bot';
+            botDiv.textContent = 'Bot: ' + (data.reply || 'Error');
+            messages.appendChild(botDiv);
+        }
+    </script>
+</body>
+</html>
